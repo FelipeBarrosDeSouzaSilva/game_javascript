@@ -1,32 +1,12 @@
-var x = 0
-var y = 0
+var canvas = document.getElementById('canva');
+var ctx = canvas.getContext('2d');
+var canvas_width ="300"; 
+var canvas_height ="500";
 
-var tecla = null
+function animar(){
+    
 
-window.addEventListener("keydown", function (event) {
-    tecla = event.keyCode;
-})
-window.addEventListener("keyup", function (event) {
-    tecla = null;
-})
-
-function teste(){
-    if (tecla == "68") {
-        x = x + 10
-        document.getElementById("object").style.left = x + "px"
-    }
-    if (tecla == "65") {
-        x = x - 10
-        document.getElementById("object").style.left = x + "px"
-    }
-    if (tecla == "87") {
-        y = y - 10
-        document.getElementById("object").style.top = y + "px"
-    }
-    if (tecla == "83") {
-        y = y + 10
-        document.getElementById("object").style.top = y + "px"
-    }
-    requestAnimationFrame(teste)
+    requestAnimationFrame(animar)
 }
-teste()
+ctx.fillStyle = 'red';
+ctx.fillRect(0,0, 50,50);
