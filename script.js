@@ -32,7 +32,7 @@ function animar(){
     if (tecla == "40") {
         y = y + 10;
     }
-    //colisa canvas
+    //colisa canvas 
 
     if(x>=(canvas_width-personagem_width)){
         x=(canvas_width-personagem_width)
