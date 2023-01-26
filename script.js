@@ -1,36 +1,54 @@
 var canvas = document.getElementById('canva');
 var ctx = canvas.getContext('2d');
-var canvas_width ="500"; 
-var canvas_height="300";
-
-var tecla = null;
-var x = 0;
-var y = 0;
-
+var canvas_width = "500"; 
+var canvas_height= "600";
 const personagem_width = 50;
 const personagem_height = 80;
 
-window.addEventListener("keydown", function (event) {
-    tecla = event.keyCode;
+var keydown = [];
+var debugar = false;
+var x = 0;
+var y = (canvas_height-personagem_height);
+
+window.addEventListener("keydown", function (e) {
+    keydown[e.key] = true;
+    if(debugar){
+        console.log(e.key);
+    }
 })
-window.addEventListener("keyup", function (event) {
-    tecla = null;
+window.addEventListener("keyup", function (e) {
+    keydown[e.key] = false;
 })
 
 ctx.fillStyle = 'red';
+nochao = true;
 
+var forcaPulo = 0;
+var gravidade = 0.09;
+setInterval(()=>{
+    y -= forcaPulo;
+    forcaPulo -= gravidade;
+},10)
+function pular(){
+    forcaPulo = 4.7;
+}
 function animar(){
-    if (tecla == "39") {
+    if (keydown["ArrowRight"]) {
         x = x + 10;
     }
-    if (tecla == "37") {
+    if (keydown["ArrowLeft"]) {
         x = x - 10;
     }
-    if (tecla == "38") {
-        y = y - 10;
+
+    if (keydown["ArrowUp"]) {
+        //cima
+        if(y >= (canvas_height-personagem_height)){
+          pular();
+        }
     }
-    if (tecla == "40") {
+    if (keydown["ArrowDown"]) {
         y = y + 10;
+        //baixo
     }
     //colisa canvas 
 
