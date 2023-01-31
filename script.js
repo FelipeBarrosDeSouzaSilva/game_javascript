@@ -51,7 +51,7 @@ window.addEventListener("keyup", function (e) {
     keydown[e.key] = false;
 })
 
-ctx.fillStyle = 'rgba(255,0,0,0.5)';
+ctx.fillStyle = 'rgba(0,100,220,0.1)';
 nochao = true;
 
 
@@ -93,7 +93,7 @@ function loopX(inimigo){
 
     jogadorBaixo <= inimigoCima && jogadorBaixo <= inimigoCima
     if(colisaoX && colisaoY){
-        clearInterval()
+        clearInterval(sprite)
        animacao(personagem_dead, 'dead')
     }
 
@@ -114,6 +114,7 @@ function loopX(inimigo){
     inimigo.instancia.fillRect(inimigo.x, inimigo.y, 50,80);
 }
 function animacao(pesonagem, tipo){
+    let time = 100;
     if(typeof sprite != 'undefined'){
         clearInterval(sprite); 
      }
@@ -123,16 +124,40 @@ function animacao(pesonagem, tipo){
         }
     }
     if(tipo == 'dead'){
+        if(MORTE){
+            return 'Está morto!';
+        }
         if(troca == 384){
             troca = 0;
         }
         MORTE = true;
+        time = 500
+
+        setTimeout(()=>{
+            ctx.clearRect(0, 0 ,canvas_width, canvas_height)
+            ctx.drawImage(pesonagem, 0, 0, 128, 128, x-20, Math.max(canvas_height-130, 0), 128, 128);
+            setTimeout(()=>{
+                ctx.clearRect(0, 0 ,canvas_width, canvas_height)
+                ctx.drawImage(pesonagem, 128, 0, 128, 128, x-20, Math.max(canvas_height-130, 0), 128, 128);
+                troca+=128;
+                setTimeout(()=>{
+                    ctx.clearRect(0, 0 ,canvas_width, canvas_height)
+                    ctx.drawImage(pesonagem, 256, 0, 128, 128, x-20, Math.max(canvas_height-130, 0), 128, 128);
+                    setTimeout(()=>{
+                        ctx.clearRect(0, 0 ,canvas_width, canvas_height)
+                        ctx.drawImage(pesonagem, 384, 0, 128, 128, x-20, Math.max(canvas_height-130, 0), 128, 128);
+                    },time + 100);
+                },time);
+            },time);
+        },time);
+        troca+=128;
+        return 0;
     }
     sprite = setInterval(()=>{
         troca += 128;
         ctx.clearRect(0, 0 ,canvas_width, canvas_height)
         ctx.drawImage(pesonagem, troca, 0, 128, 128, x-20, Math.max(canvas_height-130, 0), 128, 128);
-    },100);
+    },time);
     run.left = false;
 }
 function pular(){
@@ -144,7 +169,15 @@ function andarNivel(){
 var resp;
 var run = {
     left: false,
-    right: false
+    right: false,
+    top: false,
+    bottom: false
+}
+function desativarTeclas(left = false, right = false, top = false, bottom = false){
+    run.left = left;
+    run.right = left;
+    run.top = left;
+    run.bottom = left;
 }
 var pesonagem_run = new Image();
 pesonagem_run.src = "file:///C:/xampp/htdocs/game/game/game_javascript/img/designersAldeia/personagem/Run.png";
@@ -155,7 +188,7 @@ function animar(){
     
 
     if(!keydown["ArrowRight"] && !MORTE){
-        run.left = true;
+        run.left = false;
         ctx.drawImage(pesonagem_run, 0, 0, 128, 128, x-15, Math.max(canvas_height-130, 0), 128, 128);
         
         //ctx.clearRect(0, 0 ,canvas_width, canvas_height)
@@ -163,8 +196,9 @@ function animar(){
     
     if (keydown["ArrowRight"]) {
         x = x + 10;
-        if(run.left){
+        if(!run.left){
             animacao(pesonagem_run, 'run')
+            run.left = true;
         }
     }
     if (keydown["ArrowLeft"]) {
@@ -176,6 +210,9 @@ function animar(){
         //cima
         if(y >= (canvas_height-personagem_height)){
           pular();
+          if(run.top){
+            animacao(pesonagem_run, 'run')
+        }
         }
     }
     if (keydown["ArrowDown"]) {
@@ -198,7 +235,7 @@ function animar(){
 
     
     //ctx.clearRect(0, 0, 1000, canvas_height);
-    ctx.fillRect(x,y, personagem_width, personagem_height);
+    //ctx.fillRect(x,y, personagem_width, personagem_height);
     
 
     if(x>=canvas_width/4 || inimigo1.ativado){
