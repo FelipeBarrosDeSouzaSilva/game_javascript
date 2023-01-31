@@ -122,6 +122,9 @@ function pararAnimacao(){
 function animacao(pesonagem, tipo){
     let time = 100;
     pararAnimacao();
+    if(tipo == 'jump'){
+        alert('jump')
+    }
     if(tipo == 'run'){
         if(troca == 896){
             troca = 0;
@@ -135,7 +138,7 @@ function animacao(pesonagem, tipo){
             troca = 0;
         }
         MORTE = true;
-        time = 500
+        time = 100
 
         setTimeout(()=>{
             ctx.clearRect(0, 0 ,canvas_width, canvas_height)
@@ -194,32 +197,37 @@ pesonagem_run.src = diretorio + "Run.png";
 var personagem_dead = new Image();
 personagem_dead.src = diretorio + "Dead.png";
 function animar(){
-    if(keydown["ArrowRight"]) {
-
+    if(!keydown["ArrowRight"]) {
+        pararAnimacao();
+        run.right = false
     }
-
+    /*if(!keydown["ArrowLeft"]) {
+        pararAnimacao();
+        run.left = false
+    }*/
     
     if (keydown["ArrowRight"]) {
-        x = x + 10;
+        x = x + 5;
         if(!run.right){
            animacao(pesonagem_run, 'run', 'right');
            run.right = true;
         }
     }
     if (keydown["ArrowLeft"]) {
-        x = x - 10;
+        x = x - 5;
         if(!run.left){
             animacao(pesonagem_run, 'run', 'left');
+            run.left = true;
          }
     }
 
     if (keydown["ArrowUp"]) {
         //cima
         if(y >= (canvas_height-personagem_height)){
-          pular();
-          if(run.top){
-            animacao(pesonagem_run, 'run')
-        }
+        pular();
+            if(run.top){
+                animacao(pesonagem_run, 'run')
+            }
         }
     }
     if (keydown["ArrowDown"]) {
@@ -237,7 +245,7 @@ function animar(){
         
     }
     if(y>=(canvas_height-personagem_height)){
-        y=(canvas_height-personagem_height)
+        y=(canvas_height-personagem_height);
     }
 
     
