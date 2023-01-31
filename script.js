@@ -93,7 +93,6 @@ function loopX(inimigo){
 
     jogadorBaixo <= inimigoCima && jogadorBaixo <= inimigoCima
     if(colisaoX && colisaoY){
-        clearInterval(sprite)
        animacao(personagem_dead, 'dead')
     }
 
@@ -113,11 +112,16 @@ function loopX(inimigo){
     }
     inimigo.instancia.fillRect(inimigo.x, inimigo.y, 50,80);
 }
-function animacao(pesonagem, tipo){
-    let time = 100;
+function pararAnimacao(){
     if(typeof sprite != 'undefined'){
         clearInterval(sprite); 
+     }else{
+        return false;
      }
+}
+function animacao(pesonagem, tipo){
+    let time = 100;
+    pararAnimacao();
     if(tipo == 'run'){
         if(troca == 896){
             troca = 0;
@@ -154,11 +158,15 @@ function animacao(pesonagem, tipo){
         return 0;
     }
     sprite = setInterval(()=>{
+        if(troca == 896){
+            troca = 0;
+        }
         troca += 128;
         ctx.clearRect(0, 0 ,canvas_width, canvas_height)
         ctx.drawImage(pesonagem, troca, 0, 128, 128, x-20, Math.max(canvas_height-130, 0), 128, 128);
     },time);
-    run.left = false;
+    run.right = true;
+    run.left = true;
 }
 function pular(){
     forcaPulo = 4.7;
@@ -179,31 +187,30 @@ function desativarTeclas(left = false, right = false, top = false, bottom = fals
     run.top = left;
     run.bottom = left;
 }
+var diretorio = "file:///C:/Users/Web%20Front%20End/Desktop/game/game/img/designersAldeia/personagem/";
 var pesonagem_run = new Image();
-pesonagem_run.src = "file:///C:/xampp/htdocs/game/game/game_javascript/img/designersAldeia/personagem/Run.png";
+pesonagem_run.src = diretorio + "Run.png";
 
 var personagem_dead = new Image();
-personagem_dead.src = "file:///C:/xampp/htdocs/game/game/game_javascript/img/designersAldeia/personagem/Dead.png";
+personagem_dead.src = diretorio + "Dead.png";
 function animar(){
-    
+    if(keydown["ArrowRight"]) {
 
-    if(!keydown["ArrowRight"] && !MORTE){
-        run.left = false;
-        ctx.drawImage(pesonagem_run, 0, 0, 128, 128, x-15, Math.max(canvas_height-130, 0), 128, 128);
-        
-        //ctx.clearRect(0, 0 ,canvas_width, canvas_height)
     }
+
     
     if (keydown["ArrowRight"]) {
         x = x + 10;
-        if(!run.left){
-            animacao(pesonagem_run, 'run')
-            run.left = true;
+        if(!run.right){
+           animacao(pesonagem_run, 'run', 'right');
+           run.right = true;
         }
     }
     if (keydown["ArrowLeft"]) {
         x = x - 10;
-        
+        if(!run.left){
+            animacao(pesonagem_run, 'run', 'left');
+         }
     }
 
     if (keydown["ArrowUp"]) {
