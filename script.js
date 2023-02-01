@@ -112,6 +112,7 @@ function loopX(inimigo){
     }
     inimigo.instancia.fillRect(inimigo.x, inimigo.y, 50,80);
 }
+
 function pararAnimacao(){
     if(typeof sprite != 'undefined'){
         clearInterval(sprite); 
@@ -119,9 +120,12 @@ function pararAnimacao(){
         return false;
      }
 }
+function limparTela(){
+    ctx.clearRect(0, 0 ,canvas_width, canvas_height);
+}
 function animacao(pesonagem, tipo){
     let time = 100;
-    pararAnimacao();
+    pararAnimacao()
     if(tipo == 'jump'){
         alert('jump')
     }
@@ -139,20 +143,20 @@ function animacao(pesonagem, tipo){
         }
         MORTE = true;
         time = 100
-
+        let horizontal = Math.max(canvas_height-130, 0);
         setTimeout(()=>{
             ctx.clearRect(0, 0 ,canvas_width, canvas_height)
-            ctx.drawImage(pesonagem, 0, 0, 128, 128, x-20, Math.max(canvas_height-130, 0), 128, 128);
+            ctx.drawImage(pesonagem, 0, 0, 128, 128, x-20, horizontal, 128, 128);
             setTimeout(()=>{
                 ctx.clearRect(0, 0 ,canvas_width, canvas_height)
-                ctx.drawImage(pesonagem, 128, 0, 128, 128, x-20, Math.max(canvas_height-130, 0), 128, 128);
+                ctx.drawImage(pesonagem, 128, 0, 128, 128, x-20, horizontal, 128, 128);
                 troca+=128;
                 setTimeout(()=>{
                     ctx.clearRect(0, 0 ,canvas_width, canvas_height)
-                    ctx.drawImage(pesonagem, 256, 0, 128, 128, x-20, Math.max(canvas_height-130, 0), 128, 128);
+                    ctx.drawImage(pesonagem, 256, 0, 128, 128, x-20, horizontal, 128, 128);
                     setTimeout(()=>{
                         ctx.clearRect(0, 0 ,canvas_width, canvas_height)
-                        ctx.drawImage(pesonagem, 384, 0, 128, 128, x-20, Math.max(canvas_height-130, 0), 128, 128);
+                        ctx.drawImage(pesonagem, 384, 0, 128, 128, x-20, horizontal, 128, 128);
                     },time + 100);
                 },time);
             },time);
@@ -197,15 +201,15 @@ pesonagem_run.src = diretorio + "Run.png";
 var personagem_dead = new Image();
 personagem_dead.src = diretorio + "Dead.png";
 function animar(){
-    if(!keydown["ArrowRight"]) {
+    if(!keydown["ArrowRight"] && !keydown["ArrowLeft"] && !MORTE) {
+        run.right = false
+        run.left = false
         pararAnimacao();
+        limparTela();
+    }
+    if(!keydown["ArrowRight"]) {
         run.right = false
     }
-    /*if(!keydown["ArrowLeft"]) {
-        pararAnimacao();
-        run.left = false
-    }*/
-    
     if (keydown["ArrowRight"]) {
         x = x + 5;
         if(!run.right){
@@ -238,7 +242,6 @@ function animar(){
     //colisa canvas 
     if(x>=(canvas_width-personagem_width)){
         x=(canvas_width-personagem_width)
-        //andarNivel();
     }
     if(x<=0){
         x=0
@@ -248,10 +251,8 @@ function animar(){
         y=(canvas_height-personagem_height);
     }
 
-    
     //ctx.clearRect(0, 0, 1000, canvas_height);
-    //ctx.fillRect(x,y, personagem_width, personagem_height);
-    
+    ctx.fillRect(x,y, personagem_width, personagem_height);
 
     if(x>=canvas_width/4 || inimigo1.ativado){
         loopX(inimigo1);
