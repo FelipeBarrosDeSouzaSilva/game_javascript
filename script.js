@@ -6,6 +6,8 @@ var canvas_height= "600";
 
 const personagem_width = 50;
 const personagem_height = 80;
+var y_s = (canvas_height-personagem_height);
+y_s -= 50;
 var troca = 0;
 
 var camera = {x: 0, y: 0}
@@ -59,10 +61,11 @@ var MORTE = false;
 
 var forcaPulo = 0;
 var gravidade = 0.09;
-setInterval(()=>{
-    y -= forcaPulo;
-    forcaPulo -= gravidade;
-},10)
+var func_pular= setInterval(()=>{
+                    y -= forcaPulo;
+                    forcaPulo -= gravidade;
+                    y_s-=forcaPulo;
+                },10);
 function criarAvatar(){
     return canvas.getContext('2d');
 }
@@ -127,7 +130,8 @@ function animacao(pesonagem, tipo){
     let time = 100;
     pararAnimacao()
     if(tipo == 'jump'){
-        alert('jump')
+        console.log('jump');
+        run.top = true;
     }
     if(tipo == 'run'){
         if(troca == 896){
@@ -143,7 +147,7 @@ function animacao(pesonagem, tipo){
         }
         MORTE = true;
         time = 100
-        let horizontal = Math.max(canvas_height-130, 0);
+        var horizontal = y_s;
         setTimeout(()=>{
             ctx.clearRect(0, 0 ,canvas_width, canvas_height)
             ctx.drawImage(pesonagem, 0, 0, 128, 128, x-20, horizontal, 128, 128);
@@ -170,13 +174,21 @@ function animacao(pesonagem, tipo){
         }
         troca += 128;
         ctx.clearRect(0, 0 ,canvas_width, canvas_height)
-        ctx.drawImage(pesonagem, troca, 0, 128, 128, x-20, Math.max(canvas_height-130, 0), 128, 128);
+        ctx.drawImage(pesonagem, troca, 0, 128, 128, x-20, Math.min(470, y_s), 128, 128);
     },time);
     run.right = true;
     run.left = true;
 }
 function pular(){
+    forcaPulo = 0;
+    gravidade = 0.09;
+    y = 470;
     forcaPulo = 4.7;
+    setTimeout(()=>{
+        y -= forcaPulo;
+        forcaPulo -= gravidade;
+        y_s-=forcaPulo + 80;
+    },10);
 }
 function andarNivel(){
         ctx.translate(-canvas_width, 0);
@@ -194,18 +206,24 @@ function desativarTeclas(left = false, right = false, top = false, bottom = fals
     run.top = left;
     run.bottom = left;
 }
-var diretorio = "file:///C:/Users/Web%20Front%20End/Desktop/game/game/img/designersAldeia/personagem/";
+var diretorio = "file:///C:/xampp/htdocs/game/game/game_javascript/img/designersAldeia/personagem/";
 var pesonagem_run = new Image();
 pesonagem_run.src = diretorio + "Run.png";
 
 var personagem_dead = new Image();
 personagem_dead.src = diretorio + "Dead.png";
+
+var personagem_jump = new Image();
+personagem_jump.src = diretorio + "Jump.png";
+
 function animar(){
     if(!keydown["ArrowRight"] && !keydown["ArrowLeft"] && !MORTE) {
         run.right = false
         run.left = false
-        pararAnimacao();
+        animacao(pesonagem_run, 'run', 'right');
         limparTela();
+        //pararAnimacao();
+        
     }
     if(!keydown["ArrowRight"]) {
         run.right = false
@@ -229,8 +247,9 @@ function animar(){
         //cima
         if(y >= (canvas_height-personagem_height)){
         pular();
-            if(run.top){
-                animacao(pesonagem_run, 'run')
+            run.top = false;
+            if(!run.top){
+                animacao(pesonagem_run, 'run');
             }
         }
     }
@@ -249,10 +268,11 @@ function animar(){
     }
     if(y>=(canvas_height-personagem_height)){
         y=(canvas_height-personagem_height);
+        y_s=Math.min(470,(canvas_height-personagem_height));
     }
 
     //ctx.clearRect(0, 0, 1000, canvas_height);
-    ctx.fillRect(x,y, personagem_width, personagem_height);
+    //ctx.fillRect(x,y, personagem_width, personagem_height);
 
     if(x>=canvas_width/4 || inimigo1.ativado){
         loopX(inimigo1);
