@@ -15,6 +15,7 @@ var camera = {x: 0, y: 0}
 var keydown = [];
 var debugar = false;
 var x = 0;
+var x_cenario = 0;
 var y = (canvas_height-personagem_height);
 var sprites = null;
 
@@ -53,11 +54,14 @@ window.addEventListener("keyup", function (e) {
     keydown[e.key] = false;
 })
 
-ctx.fillStyle = 'rgba(0,100,220,0.1)';
+ctx.fillStyle = 'white';
 nochao = true;
 
 
 var MORTE = false;
+
+var movimento = 0.5;
+var t = 1;
 
 var forcaPulo = 0;
 var gravidade = 0.09;
@@ -94,7 +98,10 @@ function loopX(inimigo){
     //colisao y
     let colisaoY = jogadorBaixo <= inimigoCima && jogadorCima > inimigoBaixo;
 
-    jogadorBaixo <= inimigoCima && jogadorBaixo <= inimigoCima
+    jogadorBaixo <= inimigoCima && jogadorBaixo <= inimigoCima;
+    if(jogadorDireita > (canvas_width - 50) && jogadorDireita < (canvas_width + 50)){
+        x_cenario++;
+    }
     if(colisaoX && colisaoY){
        animacao(personagem_dead, 'dead')
     }
@@ -105,15 +112,22 @@ function loopX(inimigo){
         inimigo.direcao = 'left';
     }
     if(inimigo.direcao == 'left'){
-        inimigo.x -= inimigo.velocidade;
+        inimigo.x -= (inimigo.velocidade);
+        
     }else{
-        inimigo.x += inimigo.velocidade;
+        
+        if(keydown["ArrowRight"] && fundo_mover){
+            inimigo.x -= .7;
+        }else{
+            inimigo.x += (inimigo.velocidade);
+        }
     }
     if(inimigo){
         inimigo.instancia = criarAvatar();
         inimigo.ativado = true;
     }
     inimigo.instancia.fillRect(inimigo.x, inimigo.y, 50,80);
+    inimigo.instancia.drawImage(pesonagem_run, inimigo.x, inimigo.y, 128, 128);
 }
 
 function pararAnimacao(){
@@ -126,6 +140,8 @@ function pararAnimacao(){
 function limparTela(){
     ctx.clearRect(0, 0 ,canvas_width, canvas_height);
 }
+var i_parado = null;
+var fundo_mover = false;
 function animacao(pesonagem, tipo){
     let time = 100;
     pararAnimacao()
@@ -172,9 +188,26 @@ function animacao(pesonagem, tipo){
         if(troca == 896){
             troca = 0;
         }
+        
         troca += 128;
         ctx.clearRect(0, 0 ,canvas_width, canvas_height)
-        ctx.drawImage(pesonagem, troca, 0, 128, 128, x-20, Math.min(470, y_s), 128, 128);
+        //ctx.drawImage(pesonagem, troca, -120, 128, 128, x-20, Math.min(470, y_s), 128, 128);
+        //
+        //ctx.clearRect(0, 0 ,canvas_width, canvas_height);
+        for(var i = 1; i<10;i++){
+            
+            if(keydown["ArrowRight"]){
+                ctx.drawImage(bg, -x_cenario-500, 0, canvas_width, canvas_height);
+                ctx.drawImage(bg, -x_cenario + (canvas_width)*(movimento*i), 0, canvas_width, canvas_height);
+                i_parado = i;
+                fundo_mover = true;
+            }else{
+                ctx.drawImage(bg, -x_cenario-500, 0, canvas_width, canvas_height);
+                ctx.drawImage(bg, -x_cenario + (canvas_width)*(movimento*i), 0, canvas_width, canvas_height);
+                fundo_mover = false;
+            }
+        }
+
     },time);
     run.right = true;
     run.left = true;
@@ -206,22 +239,41 @@ function desativarTeclas(left = false, right = false, top = false, bottom = fals
     run.top = left;
     run.bottom = left;
 }
-var diretorio = "file:///C:/xampp/htdocs/game/game/game_javascript/img/designersAldeia/personagem/";
+var diretorio = "file:///C:/xampp/htdocs/game/game/game_javascript/img/designersAldeia/personagem/macacao/";
+var bg_diretorio = "file:///C:/xampp/htdocs/game/game/game_javascript/img/placeholder.png";
+var bg = new Image();
+bg.src = bg_diretorio;
+
 var pesonagem_run = new Image();
-pesonagem_run.src = diretorio + "Run.png";
+pesonagem_run.src = diretorio + "right.png";
 
-var personagem_dead = new Image();
-personagem_dead.src = diretorio + "Dead.png";
+//var personagem_dead = new Image();
+//personagem_dead.src = diretorio + "Dead.png";
 
-var personagem_jump = new Image();
-personagem_jump.src = diretorio + "Jump.png";
+//var personagem_jump = new Image();
+//personagem_jump.src = diretorio + "Jump.png";
 
-function animar(){
+bg.onload = ()=>{
+    if(!fundo_mover){
+        for(var i = 1; i<2;i++){
+            ctx.drawImage(bg, -x_cenario-500, 0, canvas_width, canvas_height);
+            ctx.drawImage(bg, -x_cenario + (canvas_width)*(movimento*i), 0, canvas_width, canvas_height);
+        }
+    }
+}
+
+(function animar(){
+    if(!fundo_mover){
+        for(var i = 1; i<2;i++){
+            ctx.drawImage(bg, -x_cenario-500, 0, canvas_width, canvas_height);
+            ctx.drawImage(bg, -x_cenario + (canvas_width)*(movimento*i), 0, canvas_width, canvas_height);
+        }
+    }
     if(!keydown["ArrowRight"] && !keydown["ArrowLeft"] && !MORTE) {
         run.right = false
         run.left = false
-        animacao(pesonagem_run, 'run', 'right');
-        limparTela();
+        //animacao(pesonagem_run, 'run', 'right');
+        
         //pararAnimacao();
         
     }
@@ -240,7 +292,9 @@ function animar(){
         if(!run.left){
             animacao(pesonagem_run, 'run', 'left');
             run.left = true;
+            console.log(1);
          }
+         
     }
 
     if (keydown["ArrowUp"]) {
@@ -272,7 +326,7 @@ function animar(){
     }
 
     //ctx.clearRect(0, 0, 1000, canvas_height);
-    //ctx.fillRect(x,y, personagem_width, personagem_height);
+    ctx.fillRect(x,y, personagem_width, personagem_height);
 
     if(x>=canvas_width/4 || inimigo1.ativado){
         loopX(inimigo1);
@@ -280,7 +334,4 @@ function animar(){
         
     }
     requestAnimationFrame(animar);
-}
-
-
-animar();
+})();
