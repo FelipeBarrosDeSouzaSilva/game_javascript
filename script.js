@@ -4,32 +4,49 @@ var ctx = canvas.getContext('2d');
 var canvas_width = "1000"; 
 var canvas_height= "600";
 
-const personagem_width = 50;
-const personagem_height = 80;
-var y_s = (canvas_height-personagem_height);
+function criarAvatar(){
+    return canvas.getContext('2d');
+}
+
+var player1 = {
+    instancia: criarAvatar(),
+    personagem_width: 50,
+    personagem_height: 80,
+    y_s: CHAO,
+    distancia_X: 0
+}
+
+var VELOCIIDADE_PLAYERS = 3;
+
+var alturaChao = 100;
+var CHAO = (canvas_height-player1.personagem_height) - 100;
+var y_s = CHAO;
 y_s -= 50;
 var troca = 0;
 
 var camera = {x: 0, y: 0}
+var VELOCIDADE_CENARIO = 2;
 
 var keydown = [];
 var debugar = false;
 var x = 0;
 var x_cenario = 0;
-var y = (canvas_height-personagem_height);
+var y = CHAO;
 var sprites = null;
 
 //imagens
 
 //ctx.drawImage(pesonagem, troca, 0, 128, 128, 0, 0, 128, 128);
 //inimigos
+
+
 var inimigo1 = {
     ativado: false,
     direcao: 'left',
-    velocidade: 2,
+    velocidade: 1,
     instancia: null,
     x: canvas_width,
-    y: canvas_height - 80,
+    y: CHAO,
     largura: 50,
     altura: 80
 };
@@ -39,7 +56,7 @@ var inimigo2 = {
     velocidade: 1,
     instancia: null,
     x: canvas_width,
-    y: canvas_height - 80,
+    y: CHAO,
     altura: 80,
     largura: 50,
 };
@@ -54,12 +71,11 @@ window.addEventListener("keyup", function (e) {
     keydown[e.key] = false;
 })
 
-ctx.fillStyle = 'white';
+//player1.instancia.fillStyle = 'white';
 nochao = true;
 
 
 var MORTE = false;
-
 var movimento = 0.5;
 var t = 1;
 
@@ -70,19 +86,25 @@ var func_pular= setInterval(()=>{
                     forcaPulo -= gravidade;
                     y_s-=forcaPulo;
                 },10);
-function criarAvatar(){
-    return canvas.getContext('2d');
-}
+var troca_f1 = 0;
+setInterval(()=>{
+    if(troca_f1 == 0){
+        troca_f1 = 128;
+    }else{
+        troca_f1 = 0;
+    }
+}, 250)
+
 function loopX(inimigo){
     
     //start COLISAO
 
     //limites jogador
-    let jogadorDireita = x+personagem_width;
+    let jogadorDireita = x+player1.personagem_width;
     let jogadorEsquerda = x;
 
     let jogadorCima = y + 25;
-    let jogadorBaixo = y - personagem_height;
+    let jogadorBaixo = y - player1.personagem_height;
 
     //limites inimigo
     let inimigoDireita = inimigo.x + inimigo.largura;
@@ -99,8 +121,8 @@ function loopX(inimigo){
     let colisaoY = jogadorBaixo <= inimigoCima && jogadorCima > inimigoBaixo;
 
     jogadorBaixo <= inimigoCima && jogadorBaixo <= inimigoCima;
-    if(jogadorDireita > (canvas_width - 50) && jogadorDireita < (canvas_width + 50)){
-        x_cenario++;
+    if(jogadorDireita > (canvas_width - 250) && jogadorDireita < (canvas_width + 50) && keydown["ArrowRight"]){
+        x_cenario += VELOCIDADE_CENARIO;
     }
     if(colisaoX && colisaoY){
        animacao(personagem_dead, 'dead')
@@ -126,8 +148,11 @@ function loopX(inimigo){
         inimigo.instancia = criarAvatar();
         inimigo.ativado = true;
     }
-    inimigo.instancia.fillRect(inimigo.x, inimigo.y, 50,80);
-    inimigo.instancia.drawImage(pesonagem_run, inimigo.x, inimigo.y, 128, 128);
+    //inimigo.instancia.fillRect(inimigo.x, inimigo.y, 50,80);
+    
+    inimigo.instancia.drawImage(fantasma, troca_f1, 0, 128, 128, inimigo.x - 30, (inimigo.y - 20), 128, 138);
+    
+    
 }
 
 function pararAnimacao(){
@@ -142,7 +167,7 @@ function limparTela(){
 }
 var i_parado = null;
 var fundo_mover = false;
-function animacao(pesonagem, tipo){
+function animacao(pesonagem, tipo, personagem){
     let time = 100;
     pararAnimacao()
     if(tipo == 'jump'){
@@ -166,17 +191,17 @@ function animacao(pesonagem, tipo){
         var horizontal = y_s;
         setTimeout(()=>{
             ctx.clearRect(0, 0 ,canvas_width, canvas_height)
-            ctx.drawImage(pesonagem, 0, 0, 128, 128, x-20, horizontal, 128, 128);
+            player1.instancia.drawImage(pesonagem, 0, 0, 128, 128, x-20, horizontal, 128, 128);
             setTimeout(()=>{
                 ctx.clearRect(0, 0 ,canvas_width, canvas_height)
-                ctx.drawImage(pesonagem, 128, 0, 128, 128, x-20, horizontal, 128, 128);
+                player1.instancia.drawImage(pesonagem, 128, 0, 128, 128, x-20, horizontal, 128, 128);
                 troca+=128;
                 setTimeout(()=>{
                     ctx.clearRect(0, 0 ,canvas_width, canvas_height)
-                    ctx.drawImage(pesonagem, 256, 0, 128, 128, x-20, horizontal, 128, 128);
+                    player1.instancia.drawImage(pesonagem, 256, 0, 128, 128, x-20, horizontal, 128, 128);
                     setTimeout(()=>{
                         ctx.clearRect(0, 0 ,canvas_width, canvas_height)
-                        ctx.drawImage(pesonagem, 384, 0, 128, 128, x-20, horizontal, 128, 128);
+                        player1.instancia.drawImage(pesonagem, 384, 0, 128, 128, x-20, horizontal, 128, 128);
                     },time + 100);
                 },time);
             },time);
@@ -191,7 +216,7 @@ function animacao(pesonagem, tipo){
         
         troca += 128;
         ctx.clearRect(0, 0 ,canvas_width, canvas_height)
-        //ctx.drawImage(pesonagem, troca, -120, 128, 128, x-20, Math.min(470, y_s), 128, 128);
+        player1.instancia.drawImage(pesonagem, troca, -120, 128, 128, x-20, Math.min(470, y_s), 128, 128);
         //
         //ctx.clearRect(0, 0 ,canvas_width, canvas_height);
         for(var i = 1; i<10;i++){
@@ -201,6 +226,7 @@ function animacao(pesonagem, tipo){
                 ctx.drawImage(bg, -x_cenario + (canvas_width)*(movimento*i), 0, canvas_width, canvas_height);
                 i_parado = i;
                 fundo_mover = true;
+                player1.distancia_X += 5;
             }else{
                 ctx.drawImage(bg, -x_cenario-500, 0, canvas_width, canvas_height);
                 ctx.drawImage(bg, -x_cenario + (canvas_width)*(movimento*i), 0, canvas_width, canvas_height);
@@ -244,8 +270,17 @@ var bg_diretorio = "file:///C:/xampp/htdocs/game/game/game_javascript/img/placeh
 var bg = new Image();
 bg.src = bg_diretorio;
 
+var fantasma = new Image();
+fantasma.src = diretorio + "../fantasma/fantasma.png";
+
 var pesonagem_run = new Image();
-pesonagem_run.src = diretorio + "right.png";
+pesonagem_run.src = diretorio + "left.png";
+
+
+
+var pesonagem_right = new Image();
+pesonagem_right.src = diretorio + "External.png";
+
 
 //var personagem_dead = new Image();
 //personagem_dead.src = diretorio + "Dead.png";
@@ -253,35 +288,20 @@ pesonagem_run.src = diretorio + "right.png";
 //var personagem_jump = new Image();
 //personagem_jump.src = diretorio + "Jump.png";
 
-bg.onload = ()=>{
-    if(!fundo_mover){
-        for(var i = 1; i<2;i++){
-            ctx.drawImage(bg, -x_cenario-500, 0, canvas_width, canvas_height);
-            ctx.drawImage(bg, -x_cenario + (canvas_width)*(movimento*i), 0, canvas_width, canvas_height);
-        }
-    }
-}
 
 (function animar(){
-    if(!fundo_mover){
-        for(var i = 1; i<2;i++){
-            ctx.drawImage(bg, -x_cenario-500, 0, canvas_width, canvas_height);
-            ctx.drawImage(bg, -x_cenario + (canvas_width)*(movimento*i), 0, canvas_width, canvas_height);
-        }
-    }
+
     if(!keydown["ArrowRight"] && !keydown["ArrowLeft"] && !MORTE) {
         run.right = false
         run.left = false
-        //animacao(pesonagem_run, 'run', 'right');
-        
-        //pararAnimacao();
-        
     }
     if(!keydown["ArrowRight"]) {
         run.right = false
+        fundo_mover = false
     }
     if (keydown["ArrowRight"]) {
-        x = x + 5;
+        x = x + VELOCIIDADE_PLAYERS;
+        player1.distancia_X += 5;
         if(!run.right){
            animacao(pesonagem_run, 'run', 'right');
            run.right = true;
@@ -299,11 +319,11 @@ bg.onload = ()=>{
 
     if (keydown["ArrowUp"]) {
         //cima
-        if(y >= (canvas_height-personagem_height)){
+        if(y >= CHAO){
         pular();
             run.top = false;
             if(!run.top){
-                animacao(pesonagem_run, 'run');
+                animacao(pesonagem_run, 'run', 'inimigo');
             }
         }
     }
@@ -313,25 +333,33 @@ bg.onload = ()=>{
     }
 
     //colisa canvas 
-    if(x>=(canvas_width-personagem_width)){
-        x=(canvas_width-personagem_width)
+    if(x>=(canvas_width-player1.personagem_width) - 200){
+        x=(canvas_width-player1.personagem_width) - 200
     }
     if(x<=0){
         x=0
         
     }
-    if(y>=(canvas_height-personagem_height)){
-        y=(canvas_height-personagem_height);
-        y_s=Math.min(470,(canvas_height-personagem_height));
+    if(y>=CHAO){
+        y=CHAO;
+        y_s=Math.min(470,CHAO);
     }
 
     //ctx.clearRect(0, 0, 1000, canvas_height);
-    ctx.fillRect(x,y, personagem_width, personagem_height);
+    //player1.instancia.fillRect(x,y, player1.personagem_width, player1.personagem_height);
+    player1.instancia.drawImage(pesonagem_run, 0, 0, 128, 128, x-35, y-50, 128, 128);
 
-    if(x>=canvas_width/4 || inimigo1.ativado){
+    if(x>=canvas_width/4 - 50 || inimigo1.ativado){
         loopX(inimigo1);
+    }
+    if(player1.distancia_X >= 8800 || inimigo2.ativado){
         loopX(inimigo2);
-        
     }
     requestAnimationFrame(animar);
 })();
+
+//iniciar cenario, só precisa movimentar um pouco o player
+keydown["ArrowRight"] = true
+setTimeout(()=>{
+    keydown["ArrowRight"] = false
+},5)
