@@ -371,3 +371,4 @@ keydown["ArrowRight"] = true
 setTimeout(()=>{
     keydown["ArrowRight"] = false
 },5)
+//atualizacao 14/02/2023
