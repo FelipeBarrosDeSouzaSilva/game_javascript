@@ -268,8 +268,8 @@ function desativarTeclas(left = false, right = false, top = false, bottom = fals
     run.top = left;
     run.bottom = left;
 }
-var diretorio = "file:///C:/xampp/htdocs/game/game/game_javascript/img/designersAldeia/personagem/macacao/";
-var bg_diretorio = "file:///C:/xampp/htdocs/game/game/game_javascript/img/placeholder.png";
+var diretorio = "./img/designersAldeia/personagem/macacao/";
+var bg_diretorio = "./img/placeholder.png";
 var bg = new Image();
 bg.src = bg_diretorio;
 
