@@ -16,7 +16,7 @@ var player1 = {
     distancia_X: 0
 }
 
-var VELOCIIDADE_PLAYERS = 3;
+var VELOCIIDADE_PLAYERS = 4;
 
 var alturaChao = 100;
 var CHAO = (canvas_height-player1.personagem_height) - 100;
@@ -25,7 +25,8 @@ y_s -= 50;
 var troca = 0;
 
 var camera = {x: 0, y: 0}
-var VELOCIDADE_CENARIO = 2;
+const QUANT_CENARIO = 30;
+var VELOCIDADE_CENARIO = 3;
 
 var keydown = [];
 var debugar = false;
@@ -39,7 +40,7 @@ var sprites = null;
 //ctx.drawImage(pesonagem, troca, 0, 128, 128, 0, 0, 128, 128);
 //inimigos
 
-
+const EMPURRAR_LEFT = 1;
 var inimigo1 = {
     ativado: false,
     direcao: 'left',
@@ -96,7 +97,7 @@ setInterval(()=>{
 }, 250)
 
 function loopX(inimigo){
-    
+    var fimTela = x>=(canvas_width-player1.personagem_width) - 200;
     //start COLISAO
 
     //limites jogador
@@ -138,8 +139,10 @@ function loopX(inimigo){
         
     }else{
         
-        if(keydown["ArrowRight"] && fundo_mover){
-            inimigo.x -= .7;
+        if(keydown["ArrowRight"] && fimTela){
+            //inimigo.x -= EMPURRAR_LEFT;
+            inimigo1.velocidade = 2;
+            inimigo2.velocidade = 2;
         }else{
             inimigo.x += (inimigo.velocidade);
         }
@@ -219,7 +222,7 @@ function animacao(pesonagem, tipo, personagem){
         player1.instancia.drawImage(pesonagem, troca, -120, 128, 128, x-20, Math.min(470, y_s), 128, 128);
         //
         //ctx.clearRect(0, 0 ,canvas_width, canvas_height);
-        for(var i = 1; i<10;i++){
+        for(var i = 1; i<QUANT_CENARIO;i++){
             
             if(keydown["ArrowRight"]){
                 ctx.drawImage(bg, -x_cenario-500, 0, canvas_width, canvas_height);
@@ -303,12 +306,12 @@ pesonagem_right.src = diretorio + "External.png";
         x = x + VELOCIIDADE_PLAYERS;
         player1.distancia_X += 5;
         if(!run.right){
-           animacao(pesonagem_run, 'run', 'right');
+           animacao(pesonagem_right, 'run', 'right');
            run.right = true;
         }
     }
     if (keydown["ArrowLeft"]) {
-        x = x - 5;
+        x = x - VELOCIIDADE_PLAYERS;
         if(!run.left){
             animacao(pesonagem_run, 'run', 'left');
             run.left = true;
@@ -334,6 +337,10 @@ pesonagem_right.src = diretorio + "External.png";
 
     //colisa canvas 
     if(x>=(canvas_width-player1.personagem_width) - 200){
+        inimigo1.x -= EMPURRAR_LEFT;
+        inimigo2.x -= EMPURRAR_LEFT;
+        inimigo1.x -= 2
+        inimigo2.x -= 2
         x=(canvas_width-player1.personagem_width) - 200
     }
     if(x<=0){
@@ -347,13 +354,14 @@ pesonagem_right.src = diretorio + "External.png";
 
     //ctx.clearRect(0, 0, 1000, canvas_height);
     //player1.instancia.fillRect(x,y, player1.personagem_width, player1.personagem_height);
-    player1.instancia.drawImage(pesonagem_run, 0, 0, 128, 128, x-35, y-50, 128, 128);
+    player1.instancia.drawImage(pesonagem_right, 0, 0, 128, 128, x-35, y-50, 128, 128);
 
     if(x>=canvas_width/4 - 50 || inimigo1.ativado){
         loopX(inimigo1);
     }
-    if(player1.distancia_X >= 8800 || inimigo2.ativado){
+    if(player1.distancia_X >= 30800 || inimigo2.ativado){
         loopX(inimigo2);
+        console.log(2)
     }
     requestAnimationFrame(animar);
 })();
